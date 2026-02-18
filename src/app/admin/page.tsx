@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { AdminDashboard } from "@/components/AdminDashboard";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
   const staff = await prisma.staffMember.findMany({
     where: { active: true },

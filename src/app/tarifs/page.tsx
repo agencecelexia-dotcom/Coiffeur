@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { Clock } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Nos Tarifs | Salon Élégance",
   description: "Découvrez nos tarifs pour coupes, colorations, soins et services barbe. Salon Élégance, Paris 8e.",

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { BookingWizard } from "@/components/BookingWizard";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Réserver en ligne | Salon Élégance",
   description: "Réservez votre rendez-vous en ligne au Salon Élégance. Choisissez votre prestation, votre coiffeur et votre créneau.",
