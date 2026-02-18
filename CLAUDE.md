@@ -2,95 +2,170 @@
 
 ## Repository Overview
 
-**Coiffeur** is a new repository under the `agencecelexia-dotcom` organization. This project is in its initial setup phase — no application code, build configuration, or tests exist yet.
+**Coiffeur** ("Salon Élégance") is a premium hair salon web platform built for `agencecelexia-dotcom`. It provides online booking, service catalog, staff management, and a back-office admin dashboard.
 
-This file serves as the reference guide for AI assistants (Claude Code, Copilot, etc.) working in this repository. Update it as the project evolves.
+**Phase 1 (MVP)** is implemented:
+- Site vitrine (Home, Tarifs, Contact)
+- Online booking module with real-time availability
+- Email confirmation system
+- Back-office agenda with appointment management
 
-## Current State
+## Tech Stack
 
-- **Status**: Empty repository — no source code, dependencies, or configuration files
-- **Organization**: agencecelexia-dotcom
-- **Repository name**: Coiffeur
+- **Runtime**: Node.js 22+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Database**: SQLite via Prisma ORM (v5)
+- **Styling**: Tailwind CSS 3
+- **Icons**: Lucide React
+- **Email**: Nodemailer
 
 ## Project Structure
 
 ```
 Coiffeur/
-├── CLAUDE.md          # This file — AI assistant reference guide
-└── .git/              # Git repository
+├── prisma/
+│   ├── schema.prisma          # Database schema (models)
+│   ├── seed.sql               # Seed data (demo services, staff)
+│   ├── migrations/            # Prisma migration files
+│   └── dev.db                 # SQLite database (gitignored)
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx         # Root layout (Header + Footer)
+│   │   ├── page.tsx           # Home page
+│   │   ├── globals.css        # Global styles + Tailwind
+│   │   ├── tarifs/page.tsx    # Pricing page (server component)
+│   │   ├── contact/page.tsx   # Contact page
+│   │   ├── reservation/page.tsx # Booking page
+│   │   ├── admin/
+│   │   │   ├── layout.tsx     # Admin layout (noindex)
+│   │   │   └── page.tsx       # Admin dashboard
+│   │   └── api/
+│   │       ├── services/route.ts      # GET services
+│   │       ├── staff/route.ts         # GET staff
+│   │       ├── availability/route.ts  # GET available slots
+│   │       └── appointments/
+│   │           ├── route.ts           # GET/POST appointments
+│   │           └── [id]/route.ts      # GET/PATCH single appointment
+│   ├── components/
+│   │   ├── Header.tsx         # Navigation header (client)
+│   │   ├── Footer.tsx         # Site footer
+│   │   ├── BookingWizard.tsx  # Multi-step booking form (client)
+│   │   └── AdminDashboard.tsx # Admin agenda view (client)
+│   └── lib/
+│       ├── prisma.ts          # Prisma client singleton
+│       └── email.ts           # Email sending utilities
+├── .env                       # Environment variables (gitignored)
+├── tailwind.config.ts
+├── tsconfig.json
+└── package.json
 ```
 
-> Update this section as files and directories are added.
+## Commands
+
+```bash
+npm install              # Install dependencies
+npm run dev              # Start dev server (http://localhost:3000)
+npm run build            # Production build
+npm run start            # Start production server
+npm run lint             # Run ESLint
+npm run db:migrate       # Run Prisma migrations
+npm run db:seed          # Seed database with demo data
+npm run db:reset         # Reset database (destroys all data)
+npx prisma generate      # Regenerate Prisma client after schema changes
+npx prisma studio        # Open Prisma Studio (DB GUI)
+```
 
 ## Development Setup
 
-No build tools or dependencies are configured yet. When the project is initialized, document the following here:
+1. `npm install`
+2. Copy `.env` and set `DATABASE_URL="file:./dev.db"`
+3. `npx prisma migrate dev` — creates/updates the database
+4. `npm run db:seed` — loads demo data (services, staff, schedules)
+5. `npm run dev` — starts at http://localhost:3000
 
-- **Language/Runtime**: (e.g., Node.js, Python, PHP)
-- **Package manager**: (e.g., npm, yarn, pnpm, composer)
-- **Framework**: (e.g., Next.js, Laravel, Django)
-- **Install command**: (e.g., `npm install`)
-- **Dev server command**: (e.g., `npm run dev`)
-- **Build command**: (e.g., `npm run build`)
+## Database Schema
 
-## Testing
+| Model | Purpose |
+|-------|---------|
+| `SalonInfo` | Singleton with salon name, address, hours |
+| `ServiceCategory` | Groups services (Coupes, Coloration, Soins, Barbe) |
+| `Service` | Individual services with name, duration, price |
+| `StaffMember` | Salon staff with bio and specialties |
+| `StaffSchedule` | Weekly schedule per staff member |
+| `Client` | Customer records (email unique) |
+| `Appointment` | Bookings linking client, service, staff, datetime |
 
-No test framework is configured yet. When tests are added, document:
+## API Routes
 
-- **Test framework**: (e.g., Jest, Vitest, PHPUnit, pytest)
-- **Run all tests**: (e.g., `npm test`)
-- **Run a single test file**: (e.g., `npm test -- path/to/file`)
-- **Test naming conventions**: (e.g., `*.test.ts`, `*_test.py`)
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/api/services` | List all service categories with services |
+| GET | `/api/staff` | List active staff members |
+| GET | `/api/availability?staffId=&date=&duration=` | Available time slots |
+| GET | `/api/appointments?date=&staffId=` | List appointments |
+| POST | `/api/appointments` | Create a new appointment |
+| GET | `/api/appointments/[id]` | Get appointment details |
+| PATCH | `/api/appointments/[id]` | Update appointment status |
+
+## Key Pages
+
+| Path | Description |
+|------|-------------|
+| `/` | Home page — hero, services overview, CTA |
+| `/tarifs` | Service pricing (from database) |
+| `/contact` | Contact info + form |
+| `/reservation` | 5-step booking wizard |
+| `/admin` | Back-office dashboard + agenda |
 
 ## Code Style & Conventions
 
-No linters or formatters are configured yet. When added, document:
+- **Linter**: ESLint (next config)
+- **Lint command**: `npm run lint`
+- **Language**: French for UI content, English for code/comments
+- **Components**: Server components by default; `"use client"` only when needed
+- **Imports**: Use `@/` path alias for `src/` directory
+- **CSS**: Tailwind utility classes; custom classes in `globals.css` `@layer components`
 
-- **Linter**: (e.g., ESLint, Flake8, PHP_CodeSniffer)
-- **Formatter**: (e.g., Prettier, Black)
-- **Lint command**: (e.g., `npm run lint`)
-- **Format command**: (e.g., `npm run format`)
+## Design System
 
-## Git Conventions
-
-- **Default branch**: To be determined (typically `main`)
-- **Branch naming**: Feature branches should use descriptive names (e.g., `feature/booking-system`, `fix/appointment-validation`)
-- **Commit messages**: Use clear, imperative-mood messages (e.g., "Add appointment scheduling endpoint")
-- Do not commit secrets, `.env` files, or credentials
-
-## Key Guidelines for AI Assistants
-
-1. **Read before modifying** — Always read a file before proposing changes to it
-2. **Minimal changes** — Only make changes that are directly requested; avoid unnecessary refactoring
-3. **No guessing** — If the project structure or conventions are unclear, explore first
-4. **Update this file** — When adding significant infrastructure (build tools, test frameworks, CI/CD), update the relevant sections of this CLAUDE.md
-5. **Security** — Never commit secrets, API keys, or credentials; use environment variables instead
-6. **Keep it simple** — Prefer straightforward solutions over clever abstractions
-
-## Architecture Notes
-
-> Document the architecture here as the project takes shape — API patterns, database schema, folder organization, key modules, etc.
-
-## CI/CD
-
-No CI/CD pipeline is configured yet. When added, document:
-
-- **CI platform**: (e.g., GitHub Actions, GitLab CI)
-- **Pipeline triggers**: (e.g., on push to main, on PR)
-- **Required checks**: (e.g., tests must pass, lint must pass)
+- **Color palette**: Gold tones (`gold-50` to `gold-900`) for accents, cream for backgrounds, gray-900 for dark sections
+- **Typography**: Geist Sans (local font), light weight for headings
+- **Buttons**: `.btn-primary` (gold bg) and `.btn-secondary` (gold border)
+- **Layout**: Mobile-first, `max-w-7xl` containers
 
 ## Environment Variables
 
-> List required environment variables here as they are introduced:
->
-> | Variable | Description | Required |
-> |----------|-------------|----------|
-> | — | — | — |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | SQLite database path (e.g., `file:./dev.db`) | Yes |
+| `SMTP_HOST` | SMTP server for emails | No (defaults to localhost) |
+| `SMTP_PORT` | SMTP port | No (defaults to 1025) |
 
-## Deployment
+## Git Conventions
 
-No deployment configuration exists yet. When added, document:
+- **Branch naming**: `feature/`, `fix/`, `claude/` prefixes
+- **Commit messages**: Imperative mood, concise (e.g., "Add booking confirmation email")
+- Do not commit `.env`, `prisma/dev.db`, or `node_modules/`
 
-- **Hosting**: (e.g., Vercel, AWS, Docker)
-- **Deploy command**: (e.g., `npm run deploy`)
-- **Environments**: (e.g., staging, production)
+## Key Guidelines for AI Assistants
+
+1. **Read before modifying** — Always read a file before proposing changes
+2. **Run `npx prisma generate`** after any schema change
+3. **Run `npm run build`** to verify changes compile
+4. **French UI** — All user-facing text is in French
+5. **Mobile-first** — Design for mobile (80%+ of traffic)
+6. **No secrets** — Use `.env` for all configuration
+7. **Server components** — Default to server components; use `"use client"` sparingly
+8. **Prisma singleton** — Always import from `@/lib/prisma`, never create new instances
+
+## Phase 2 Roadmap (Not Yet Implemented)
+
+- Stripe payment integration (deposits/acomptes)
+- E-commerce boutique (products, click & collect, gift cards)
+- Loyalty program (points/cagnotte)
+- Advanced CRM (color formulas, before/after photos)
+- SMS marketing (reminders, come-back campaigns)
+- Instagram feed integration
+- Blog/SEO content
+- Verified reviews system
