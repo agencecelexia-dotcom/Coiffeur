@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-
 export const metadata: Metadata = {
-  title: "Salon Élégance | Coiffeur Paris 8e",
+  title: "Salon Élégance | Coiffeur Premium Paris 8e",
   description:
-    "Votre salon de coiffure premium à Paris 8e. Réservez en ligne vos coupes, colorations et soins capillaires.",
-  keywords: "coiffeur, paris, salon, coiffure, coloration, balayage, coupe",
+    "Salon de coiffure haut de gamme au cœur de Paris 8e. Coupes sur-mesure, colorations d'exception et soins capillaires premium. Réservez en ligne.",
+  keywords:
+    "coiffeur paris 8, salon coiffure premium, balayage paris, coloration paris, coupe femme paris, coiffeur homme paris",
 };
 
 export default function RootLayout({
@@ -24,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${geistSans.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <Header />
         <main className="min-h-screen">{children}</main>
         <Footer />

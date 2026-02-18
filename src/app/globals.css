@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,24 +7,52 @@
 :root {
   --background: #fefcf8;
   --foreground: #1a1a1a;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-sans);
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-gold-600 hover:bg-gold-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-gold-600 hover:bg-gold-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-gold-600/20;
   }
   .btn-secondary {
-    @apply border-2 border-gold-600 text-gold-700 hover:bg-gold-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200;
+    @apply border-2 border-gold-600 text-gold-700 hover:bg-gold-50 font-medium py-3 px-6 rounded-lg transition-all duration-200;
   }
   .section-title {
-    @apply text-3xl md:text-4xl font-light text-center mb-2 tracking-wide;
+    @apply text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-3 tracking-tight;
   }
   .section-subtitle {
-    @apply text-gold-600 text-center mb-10 text-sm uppercase tracking-widest;
+    @apply text-gold-600 text-center mb-10 text-xs uppercase tracking-[0.3em];
+    font-family: var(--font-sans);
+  }
+  .page-hero {
+    @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-20 md:py-28 relative overflow-hidden;
+  }
+  .page-hero::before {
+    content: "";
+    @apply absolute inset-0 opacity-[0.03];
+    background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-cream-200 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  .input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-gold-400 focus:border-transparent outline-none transition-shadow bg-white;
+  }
+  .gold-divider {
+    @apply w-16 h-0.5 bg-gradient-to-r from-gold-400 to-gold-600 mx-auto;
   }
 }
