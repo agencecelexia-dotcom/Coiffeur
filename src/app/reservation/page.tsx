@@ -1,29 +1,12 @@
-import { prisma } from "@/lib/prisma";
+import { categories, staff } from "@/lib/data";
 import { BookingWizard } from "@/components/BookingWizard";
-
-export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Réserver en ligne | Salon Élégance",
   description: "Réservez votre rendez-vous en ligne au Salon Élégance. Choisissez votre prestation, votre coiffeur et votre créneau.",
 };
 
-export default async function ReservationPage() {
-  const categories = await prisma.serviceCategory.findMany({
-    orderBy: { order: "asc" },
-    include: {
-      services: {
-        where: { active: true },
-        orderBy: { price: "asc" },
-      },
-    },
-  });
-
-  const staff = await prisma.staffMember.findMany({
-    where: { active: true },
-    orderBy: { firstName: "asc" },
-  });
-
+export default function ReservationPage() {
   return (
     <>
       <section className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-20">

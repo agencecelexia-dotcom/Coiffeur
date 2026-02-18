@@ -1,27 +1,25 @@
 # Salon Élégance — Plateforme Web Coiffure
 
-Plateforme web premium pour salon de coiffure avec prise de rendez-vous en ligne, gestion de l'agenda et back-office administratif.
+Plateforme web premium pour salon de coiffure avec prise de rendez-vous en ligne et back-office administratif.
 
-## Fonctionnalites (Phase 1 - MVP)
+## Fonctionnalités (Phase 1 - Vitrine)
 
 - **Site vitrine** : Accueil, tarifs, contact
-- **Reservation en ligne** : Module multi-etapes (service, coiffeur, creneau, confirmation)
-- **Back-office** : Dashboard admin avec agenda jour par jour
-- **Confirmation email** : Envoi automatique apres reservation
+- **Réservation en ligne** : Module multi-étapes (service, coiffeur, créneau, confirmation)
+- **Back-office** : Dashboard admin avec agenda jour par jour (démo)
+
+> La base de données et les emails seront connectés dans une prochaine version.
 
 ## Stack Technique
 
 - **Next.js 14** (App Router) + TypeScript
-- **Prisma 5** + SQLite
 - **Tailwind CSS 3**
-- **Nodemailer** pour les emails
+- **Lucide React** pour les icônes
 
-## Demarrage Rapide
+## Démarrage Rapide
 
 ```bash
 npm install
-npx prisma migrate dev
-npm run db:seed
 npm run dev
 ```
 
@@ -33,9 +31,6 @@ Le back-office admin est sur [http://localhost:3000/admin](http://localhost:3000
 
 | Commande | Description |
 |----------|-------------|
-| `npm run dev` | Serveur de developpement |
+| `npm run dev` | Serveur de développement |
 | `npm run build` | Build de production |
 | `npm run lint` | Linter ESLint |
-| `npm run db:migrate` | Appliquer les migrations |
-| `npm run db:seed` | Charger les donnees de demo |
-| `npm run db:reset` | Reinitialiser la base de donnees |

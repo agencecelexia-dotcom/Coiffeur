@@ -41,14 +41,22 @@ const STEPS: { key: Step; label: string }[] = [
   { key: "confirmation", label: "Confirmation" },
 ];
 
+// Generate available time slots (9:00 - 19:00, every 30 min)
+function generateSlots(): string[] {
+  const slots: string[] = [];
+  for (let hour = 9; hour < 19; hour++) {
+    slots.push(`${hour.toString().padStart(2, "0")}:00`);
+    slots.push(`${hour.toString().padStart(2, "0")}:30`);
+  }
+  return slots;
+}
+
 export function BookingWizard({ categories, staff }: BookingWizardProps) {
   const [currentStep, setCurrentStep] = useState<Step>("service");
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  const [availableSlots, setAvailableSlots] = useState<string[]>([]);
-  const [loadingSlots, setLoadingSlots] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -56,11 +64,10 @@ export function BookingWizard({ categories, staff }: BookingWizardProps) {
     phone: "",
     notes: "",
   });
-  const [submitting, setSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-  const [error, setError] = useState("");
 
   const stepIndex = STEPS.findIndex((s) => s.key === currentStep);
+  const availableSlots = generateSlots();
 
   const goNext = () => {
     const next = STEPS[stepIndex + 1];
@@ -72,59 +79,14 @@ export function BookingWizard({ categories, staff }: BookingWizardProps) {
     if (prev) setCurrentStep(prev.key);
   };
 
-  const fetchSlots = async (staffId: string, date: string) => {
-    if (!selectedService) return;
-    setLoadingSlots(true);
-    setAvailableSlots([]);
-    try {
-      const res = await fetch(
-        `/api/availability?staffId=${staffId}&date=${date}&duration=${selectedService.duration}`
-      );
-      const data = await res.json();
-      setAvailableSlots(data.slots || []);
-    } catch {
-      setAvailableSlots([]);
-    } finally {
-      setLoadingSlots(false);
-    }
-  };
-
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
     setSelectedTime("");
-    if (selectedStaff) {
-      fetchSlots(selectedStaff.id, date);
-    }
   };
 
-  const handleSubmit = async () => {
-    setSubmitting(true);
-    setError("");
-    try {
-      const res = await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          serviceId: selectedService!.id,
-          staffId: selectedStaff!.id,
-          date: selectedDate,
-          time: selectedTime,
-          ...formData,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Erreur lors de la réservation");
-      }
-
-      setConfirmed(true);
-      setCurrentStep("confirmation");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de la réservation");
-    } finally {
-      setSubmitting(false);
-    }
+  const handleSubmit = () => {
+    setConfirmed(true);
+    setCurrentStep("confirmation");
   };
 
   // Generate next 30 days for date picker
@@ -315,29 +277,21 @@ export function BookingWizard({ categories, staff }: BookingWizardProps) {
                 <Clock className="inline h-4 w-4 mr-1" />
                 Heure
               </label>
-              {loadingSlots ? (
-                <p className="text-gray-400 text-sm py-4">Chargement des créneaux...</p>
-              ) : availableSlots.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4">
-                  Aucun créneau disponible pour cette date. Essayez un autre jour.
-                </p>
-              ) : (
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                  {availableSlots.map((slot) => (
-                    <button
-                      key={slot}
-                      onClick={() => setSelectedTime(slot)}
-                      className={`py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        selectedTime === slot
-                          ? "bg-gold-600 text-white"
-                          : "bg-white border border-gray-200 hover:border-gold-400"
-                      }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                {availableSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    onClick={() => setSelectedTime(slot)}
+                    className={`py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      selectedTime === slot
+                        ? "bg-gold-600 text-white"
+                        : "bg-white border border-gray-200 hover:border-gold-400"
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -446,23 +400,17 @@ export function BookingWizard({ categories, staff }: BookingWizardProps) {
             </div>
           </div>
 
-          {error && (
-            <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
           <div className="mt-8 flex justify-between">
             <button onClick={goPrev} className="text-sm text-gray-500 hover:text-gold-600 flex items-center gap-1">
               <ChevronLeft className="h-4 w-4" /> Retour
             </button>
             <button
               onClick={handleSubmit}
-              disabled={submitting || !formData.firstName || !formData.lastName || !formData.email}
+              disabled={!formData.firstName || !formData.lastName || !formData.email}
               className="btn-primary flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {submitting ? "Réservation en cours..." : "Confirmer le rendez-vous"}
-              {!submitting && <Check className="h-4 w-4" />}
+              Confirmer le rendez-vous
+              <Check className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -476,8 +424,7 @@ export function BookingWizard({ categories, staff }: BookingWizardProps) {
           </div>
           <h2 className="text-2xl font-medium mb-4">Rendez-vous confirmé !</h2>
           <p className="text-gray-500 mb-6 max-w-md mx-auto">
-            Votre rendez-vous a bien été enregistré. Un email de confirmation a été envoyé à{" "}
-            <strong>{formData.email}</strong>.
+            Votre demande de rendez-vous a bien été enregistrée. Nous vous contacterons pour confirmer.
           </p>
           <div className="bg-cream-100 rounded-lg p-6 max-w-sm mx-auto text-sm text-left space-y-2">
             <p><strong>Prestation :</strong> {selectedService?.name}</p>
